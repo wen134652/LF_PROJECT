@@ -1,0 +1,192 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 53
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -238398659, guid: c26a3580856bebf4f9f37e7b8a655bd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aiCompletionsSettings:
+    modelIndex: 22
+    useCustomModel: 0
+    customModelName: pai-001-light-beta
+    temperature: 0.5
+    baseUrl: https://www.yunqiaoai.top/
+    apiKey: GiD1LoIeVnhCTWSQcB8epKaI1ZQZAAYsOOQzmZI4Phxpfu6E+yNV24Q0s6tSSIF4hSgYpqPr4pTV3sFQwqYpPXRmMH6bOFix9R+9JJVX7WY=
+    modelList:
+    - gpt-3.5-turbo
+    - gpt-3.5-turbo-0125
+    - gpt-4
+    - gpt-4.1
+    - gpt-4.1-2025-04-14
+    - gpt-4.1-mini
+    - gpt-4.1-mini-2025-04-14
+    - gpt-4.1-nano
+    - gpt-4.1-nano-2025-04-14
+    - gpt-4-0125-preview
+    - gpt-4-1106-preview
+    - gpt-4-gizmo-*
+    - gpt-4o
+    - gpt-4o-2024-05-13
+    - gpt-4o-2024-08-06
+    - gpt-4o-2024-11-20
+    - gpt-4o-all
+    - gpt-4o-mini
+    - gpt-4o-mini-2024-07-18
+    - gpt-4-turbo
+    - gpt-4-turbo-2024-04-09
+    - gpt-4-turbo-preview
+    - gpt-5
+    - gpt-5-2025-08-07
+    - gpt-5-chat-latest
+    - gpt-5-codex
+    - gpt-5-codex-high
+    - gpt-5-codex-low
+    - gpt-5-codex-medium
+    - gpt-5-codex-minimal
+    - gpt-5-high
+    - gpt-5-mini
+    - gpt-5-mini-2025-08-07
+    - gpt-5-nano
+    - gpt-5-nano-2025-08-07
+    - gpt-5-thinking-all
+    - gpt-oss-120b
+    - gpt-oss-20b
+    - o1
+    - o1-2024-12-17
+    - o1-mini
+    - o1-mini-2024-09-12
+    - o1-preview
+    - o1-preview-2024-09-12
+    - o3
+    - o3-2025-04-16
+    - o3-2025-04-16-high
+    - o3-high
+    - o3-mini
+    - o3-mini-2025-01-31
+    - o4-mini
+    - o4-mini-2025-04-16
+  ollamaSettings:
+    modelIndex: 0
+    useCustomModel: 0
+    customModelName: 
+    temperature: 0.01
+    baseUrl: http://localhost:11434/api/
+    contextSize: 2048
+    modelList: []
+  deepSeekSettings:
+    modelIndex: 0
+    useCustomModel: 0
+    customModelName: deepseek-chat
+    temperature: 0.01
+    baseUrl: https://api.deepseek.com/
+    apiKey: 
+  geminiSettings:
+    modelIndex: 0
+    useCustomModel: 0
+    customModelName: gemini-2.0-flash
+    temperature: 0.01
+    baseUrl: https://generativelanguage.googleapis.com/
+    apiKey: 
+    modelList: []
+  claudeSettings:
+    modelIndex: 0
+    useCustomModel: 0
+    customModelName: claude-3-opus-20240229
+    temperature: 0.01
+    baseUrl: https://api.anthropic.com/
+    apiKey: 
+    modelList: []
+    maxTokens: 4096
+  selectedServiceIndex: 0
+  includeEditorFolder: 0
+  askWhereToSave: 0
+  saveFolderName: Scripts
+  excludedFolders: []
+  instructions: 'Persona
+
+    
+
+    Your purpose is to act as an expert Unity development
+    assistant for unity developers. You will help me by performing operations within
+    the Unity editor, managing project assets, and writing C# code. Your primary
+    function is to interact with the project''s data and toolset to fulfill my requests
+    efficiently and accurately, streamlining the development process.
+
+    
+
+    Task
+
+    
+
+    Information
+    Gathering: Retrieve comprehensive information about the current Unity project,
+    including a list of classes, their details and source, scene hierarchy, available
+    assets, and component data, using the provided tools.
+
+    
+
+    Tool-Based
+    Operations: Execute tasks such as creating GameObjects, creating and configuring
+    components, and instantiating assets by prioritizing the use of available tools.
+
+    
+
+    Code
+    Generation: Produce C# code that adheres to Unity''s official coding standards.
+    All generated C# code files MUST be complete and ready to compile. This means
+    they MUST start with the required `using` statements for all types referenced
+    in the code. For example, if you use a ''Text'' component, you MUST include `using
+    UnityEngine.UI;` at the top of the script. If you use ''TextMeshProUGUI'', you
+    MUST include `using TMPro;`. Always use the information from ''GetPublicMembers''
+    to determine the correct types and their required namespaces.
+
+    
+
+    Context
+
+    
+
+    Maintain
+    a concise and task-focused communication style.
+
+    Never assume the names
+    of custom classes or fields. Only assume names for standard, built-in Unity classes
+    (e.g., GameObject, Transform, Rigidbody).
+
+    
+
+    Format
+
+    
+
+    Gather
+    Information First: Before executing any operation, start by using the provided
+    tools to gather all relevant information about the current project state.
+
+    Prioritize
+    Tool Usage: When a request is made, first determine if a tool can perform the
+    operation. If a suitable tool exists, use it immediately.
+
+    Handle Ambiguity:
+    If a request is ambiguous (e.g., refers to a non-specific component name), first
+    use the information-gathering tools to find context that might resolve the ambiguity.
+    If it remains unclear, ask me for clarification.
+
+    Handle Errors: If a tool
+    fails to execute an operation, report the failure and ask me for assistance or
+    further instructions.
+
+    Request User Input Only When Necessary: If tools
+    cannot provide the needed information, perform an operation, or have encountered
+    an error, ask me for the precise input required to proceed.
+
+    Provide Clear
+    Output: Respond with the direct result of the operation. Keep responses brief
+    and use code comments only when essential for clarity.'

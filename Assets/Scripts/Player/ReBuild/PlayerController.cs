@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(MovementController))]
 [RequireComponent(typeof(ClimbController))]
 [RequireComponent(typeof(GroundChecker))]
-public class ClimbLadder2D : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
     private bool controlLocked = false;
 
@@ -27,14 +27,18 @@ public class ClimbLadder2D : MonoBehaviour
         climbController = GetComponent<ClimbController>();
         throwController = GetComponent<ThrowController>();
         groundChecker = GetComponent<GroundChecker>();
-        
+
         inputHandler = GetComponent<InputHandler>();
         if (inputHandler == null)
         {
             inputHandler = gameObject.AddComponent<InputHandler>();
         }
+    }
 
-        if (throwController != null)
+    private void Start()
+    {
+        // 初始化时同步投掷方向，避免开局面朝方向不一致
+        if (throwController != null && movementController != null)
         {
             throwController.FaceDir = movementController.FaceDir;
         }
@@ -48,26 +52,25 @@ public class ClimbLadder2D : MonoBehaviour
             return;
         }
 
-        // 更新移动控制器
+
+        // 常规移动：非攀爬状态下由MovementController更新
         if (movementController != null && !climbController.IsClimbing)
         {
             movementController.UpdateMovement(Time.deltaTime);
         }
 
-        // 更新攀爬控制器
+        // 攀爬状态：交给ClimbController处理
         if (climbController.IsClimbing)
         {
             climbController.UpdateClimb(inputHandler.MoveAxis, movementController.FaceDir);
         }
 
-        // 更新投掷控制器面向方向
-        if (throwController != null)
+        // 让投掷控制器保持与最新面向一致
+        if (throwController != null && movementController != null)
         {
             throwController.FaceDir = movementController.FaceDir;
         }
 
-        // 重置单次触发输入
-        inputHandler?.ResetFrameInputs();
     }
 
     private void FixedUpdate()
@@ -77,17 +80,19 @@ public class ClimbLadder2D : MonoBehaviour
             return;
         }
 
-        // 攀爬状态
+
+        // 攀爬时不参与地面运动，直接交由攀爬控制器处理
         if (climbController.IsClimbing)
         {
             climbController.FixedUpdateClimb(inputHandler.MoveAxis);
             return;
         }
 
-        // 正常移动状态
+        // 常规地面/空中运动
         if (movementController != null)
         {
-            // 处理输入
+
+            // 广播一次性输入
             if (inputHandler.JumpPressed)
             {
                 movementController.TryJump();
@@ -101,9 +106,12 @@ public class ClimbLadder2D : MonoBehaviour
             movementController.SetJumpHeld(inputHandler.JumpHeld);
             movementController.FixedUpdateMovement(inputHandler.MoveAxis);
         }
+
+        // 物理帧结束后清理本帧输入状态
+        inputHandler?.ResetFrameInputs();
     }
 
-    // ========== 输入回调方法 ==========
+
     public void OnMove(InputAction.CallbackContext ctx)
     {
         if (inventoryOpen)
@@ -118,7 +126,7 @@ public class ClimbLadder2D : MonoBehaviour
     {
         if (inventoryOpen) return;
 
-        // 攀爬状态下跳跃退出攀爬
+
         if (ctx.performed && climbController.IsClimbing)
         {
             climbController.ExitClimb();
@@ -169,7 +177,7 @@ public class ClimbLadder2D : MonoBehaviour
 
     public void OnNoteHold(InputAction.CallbackContext ctx) { }
 
-    // ========== 投掷相关 ==========
+
     public void BeginAim(bool useLeftHand)
     {
         if (throwController != null)
@@ -194,7 +202,7 @@ public class ClimbLadder2D : MonoBehaviour
         }
     }
 
-    // ========== 攀爬相关 ==========
+
     public void EnterClimb(Transform anchor, Vector2 upDir, Vector2 rightDir, MonoBehaviour source)
     {
         if (climbController != null)
@@ -211,7 +219,7 @@ public class ClimbLadder2D : MonoBehaviour
         }
     }
 
-    // ========== 控制锁定 ==========
+
     public void SetControlLocked(bool locked)
     {
         controlLocked = locked;
@@ -226,7 +234,7 @@ public class ClimbLadder2D : MonoBehaviour
         }
     }
 
-    // ========== 属性访问 ==========
+
     public bool IsClimbing => climbController != null && climbController.IsClimbing;
     public bool IsDashing => movementController != null && movementController.IsDashing;
     public bool IsAiming => throwController != null && throwController.IsAiming;
