@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56a9536a57fab114fa2507e698fa804b, type: 3}
+  m_Name: testWeapon
+  m_EditorClassIdentifier: 
+  id: 1
+  displayName: "\u6D4B\u8BD5\u6B66\u5668"
+  description: 
+  icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  itemType: 3
+  maxStack: 1
+  gridWidth: 3
+  gridHeight: 1
+  canRotate: 1
+  perishable: 0
+  shelfLifeSeconds: 0
+  destroyWhenRotten: 1
+  rottenResultItem: {fileID: 0}
+  rottenIcon: {fileID: 0}
+  freshnessCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  hasDurability: 0
+  maxDurability: 100
+  durabilityCostPerUse: 1
+  destroyWhenBroken: 1
+  brokenResultItem: {fileID: 0}

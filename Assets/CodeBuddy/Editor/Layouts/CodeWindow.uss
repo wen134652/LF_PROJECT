@@ -1,0 +1,12 @@
+
+.unity-list-view__empty-label {
+    display: none;
+};
+
+.unity-text-field__input {
+    align-self: stretch;
+}
+
+.attach-button {
+    background-image: url("./paperclip.png");
+}

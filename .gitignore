@@ -1,0 +1,23 @@
+# Unity generated folders
+Library/
+Logs/
+Temp/
+Obj/
+Build/
+Builds/
+UserSettings/
+MemoryCaptures/
+Sysinfo.txt
+
+# IDE / system files
+.vs/
+.idea/
+.DS_Store
+
+# Project/solution files
+*.csproj
+*.sln
+*.user
+
+# Unity package cache
+Packages/PackageCache/
