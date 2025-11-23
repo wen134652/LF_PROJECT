@@ -35,23 +35,23 @@ public class ClimbLadder2D : MonoBehaviour, IInteractable
     }
     public void Interact(Transform player)
     {
-        var ctrl = player.GetComponent<MyCharacterController>();
+        var ctrl = player.GetComponent<ClimbController>();
         if (ctrl == null) return;
-        if (!ctrl.isClimbing)
+        if (!ctrl.IsClimbing)
         {
             var anchor = snapAnchor ? snapAnchor : null;
             ctrl.EnterClimb(anchor, Vector2.up, Vector2.right, this);
         }
         else
         {
-            if (ctrl.climbSource == (MonoBehaviour)this)
+            if (ctrl.IsClimbing == (MonoBehaviour)this)
                 ctrl.ExitClimb();
         }
     }
     private void OnTriggerExit2D(Collider2D player)
     {
-        var ctrl = player.GetComponent<MyCharacterController>();
-        if (ctrl && ctrl.isClimbing && ctrl.climbSource == (MonoBehaviour)this)
+        var ctrl = player.GetComponent<ClimbController>();
+        if (ctrl && ctrl.IsClimbing && ctrl.IsClimbing == (MonoBehaviour)this)
         {
             ctrl.ExitClimb();
         }

@@ -26,12 +26,14 @@ public class InputHandler : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext ctx)
     {
-        if (ctx.performed)
+        // 处理按下状态
+        if (ctx.started || ctx.performed)
         {
             jumpPressed = true;
             jumpHeld = true;
         }
-        else if (ctx.canceled)
+        // 处理松开状态
+        if (ctx.canceled)
         {
             jumpHeld = false;
         }

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e443ea72893f399408e39c65e5f3095b, type: 3}
+  m_Name: Chara
+  m_EditorClassIdentifier: 
+  moveSpeed: 8
+  accel: 60
+  decel: 80
+  crouchMoveSpeed: 4
+  crouchAccel: 30
+  crouchDecel: 40
+  dashSpeed: 16
+  dashAccel: 200
+  dashTime: 0.15
+  dashCooldown: 0.4
+  jumpVelocity: 13
+  coyoteTime: 0.2
+  jumpBuffer: 0.1
+  jumpHoldTime: 0.2
+  fallGravityScale: 3
+  earlyReleaseGravityScale: 5
+  maxFallSpeed: -30
+  rayDistance: 0.24
+  groundLayerNames:
+  - Ground
+  rayCount: 3
