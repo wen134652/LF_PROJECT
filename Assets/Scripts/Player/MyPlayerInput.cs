@@ -228,9 +228,17 @@ public class MyPlayerInput : MonoBehaviour
         AddBindingToAction(jump, jumpBinding);
 
         System.Action<InputAction.CallbackContext> jumpHandler = controller.OnJump;
+        // 订阅所有事件：started, performed, canceled，确保能正确检测按下和松开
+        jump.started += jumpHandler;
         jump.performed += jumpHandler;
+        jump.canceled += jumpHandler;
 
-        unbindActions.Add(() => jump.performed -= jumpHandler);
+        unbindActions.Add(() => 
+        { 
+            jump.started -= jumpHandler; 
+            jump.performed -= jumpHandler; 
+            jump.canceled -= jumpHandler; 
+        });
     }
 
     /// <summary>

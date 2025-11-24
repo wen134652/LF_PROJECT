@@ -9,6 +9,10 @@ public class PlayerController : MonoBehaviour
 {
     private bool controlLocked = false;
 
+    [Header("Configuration")]
+    [Tooltip("玩家配置数据资产，包含所有角色相关的配置参数")]
+    public PlayerConfigData configData;
+
     [Header("Inventory")]
     public GameObject inventoryUI;
 
@@ -33,10 +37,69 @@ public class PlayerController : MonoBehaviour
         {
             inputHandler = gameObject.AddComponent<InputHandler>();
         }
+
+        // 初始化配置数据到各个组件
+        InitializeConfigData();
+    }
+
+    /// <summary>
+    /// 初始化配置数据到各个组件
+    /// </summary>
+    private void InitializeConfigData()
+    {
+        ApplyConfigData();
+    }
+
+    /// <summary>
+    /// 应用配置数据到所有相关组件（公共方法，可供UI按钮调用）
+    /// </summary>
+    public void ApplyConfigData()
+    {
+        if (configData == null)
+        {
+            Debug.LogWarning($"PlayerController: {gameObject.name} 未分配 PlayerConfigData 资产，将使用默认值");
+            return;
+        }
+
+        // 确保组件引用已获取
+        if (movementController == null)
+            movementController = GetComponent<MovementController>();
+        if (groundChecker == null)
+            groundChecker = GetComponent<GroundChecker>();
+
+        // 将配置数据传递给MovementController
+        if (movementController != null)
+        {
+            movementController.InitializeFromConfig(configData);
+            Debug.Log($"PlayerController: 已应用配置数据到 MovementController");
+        }
+        else
+        {
+            Debug.LogWarning($"PlayerController: 未找到 MovementController 组件");
+        }
+
+        // 将配置数据传递给GroundChecker
+        if (groundChecker != null)
+        {
+            groundChecker.InitializeFromConfig(configData);
+            Debug.Log($"PlayerController: 已应用配置数据到 GroundChecker");
+        }
+        else
+        {
+            Debug.LogWarning($"PlayerController: 未找到 GroundChecker 组件");
+        }
+
+        Debug.Log($"PlayerController: 配置数据应用完成");
     }
 
     private void Start()
     {
+        // 确保配置数据已初始化（如果Awake时组件还未准备好）
+        if (configData != null)
+        {
+            InitializeConfigData();
+        }
+
         // 初始化时同步投掷方向，避免开局面朝方向不一致
         if (throwController != null && movementController != null)
         {

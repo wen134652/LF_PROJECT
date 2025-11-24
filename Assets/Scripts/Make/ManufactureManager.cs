@@ -121,7 +121,8 @@ public class ManufactureManager : MonoBehaviour
             for (int x = 0; x < rw; x++)
             {
                 ItemSO need = recipe.GetRequiredItem(x, y);
-                ItemSO have = materialGrid.GetItem(offsetX + x, offsetY + y);
+                InventoryItem inventoryItem = materialGrid.GetItemAt(offsetX + x, offsetY + y);
+                ItemSO have = inventoryItem?.item; // 从 InventoryItem 获取 ItemSO
 
                 if (need == null && have == null) continue;
                 if (need == null && have != null) return false;
@@ -152,7 +153,8 @@ public class ManufactureManager : MonoBehaviour
 
                 if (insidePattern) continue;
 
-                ItemSO have = materialGrid.GetItem(x, y);
+                InventoryItem inventoryItem = materialGrid.GetItemAt(x, y);
+                ItemSO have = inventoryItem?.item; // 从 InventoryItem 获取 ItemSO
                 if (have != null)
                     return false; // 图案外不能有额外材料
             }
@@ -235,14 +237,35 @@ public class ManufactureManager : MonoBehaviour
         int rw = recipe.width;
         int rh = recipe.height;
 
-        for (int y = 0; y < rh; y++)
+        // 需要找到匹配的配方位置（与 FindMatchingRecipe 中的逻辑一致）
+        // 这里简化处理：假设配方从 (0,0) 开始，实际应该使用匹配时的偏移量
+        // 为了正确实现，应该保存匹配时的偏移量，或者重新查找匹配位置
+        
+        // 临时方案：遍历所有可能的偏移位置，找到匹配的位置后消耗材料
+        int gw = materialGrid.width;
+        int gh = materialGrid.height;
+        
+        for (int offsetY = 0; offsetY <= gh - rh; offsetY++)
         {
-            for (int x = 0; x < rw; x++)
+            for (int offsetX = 0; offsetX <= gw - rw; offsetX++)
             {
-                ItemSO need = recipe.GetRequiredItem(x, y);
-                if (need != null)
+                if (PatternMatchesAtOffset(recipe, offsetX, offsetY) &&
+                    OtherCellsEmptyOutsidePattern(recipe, offsetX, offsetY))
                 {
-                    materialGrid.ClearSlot(x, y);
+                    // 找到匹配位置，消耗材料
+                    for (int y = 0; y < rh; y++)
+                    {
+                        for (int x = 0; x < rw; x++)
+                        {
+                            ItemSO need = recipe.GetRequiredItem(x, y);
+                            if (need != null)
+                            {
+                                // 删除该位置的物品（会删除整个 InventoryItem）
+                                materialGrid.RemoveItemAtCell(offsetX + x, offsetY + y);
+                            }
+                        }
+                    }
+                    return; // 只消耗一次
                 }
             }
         }
