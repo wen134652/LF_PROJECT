@@ -79,9 +79,8 @@ public class InventoryGrid : MonoBehaviour
     private void FillCells(InventoryItem inst, int originX, int originY, bool occupy)
     {
         if (inst == null) return;
-        bool rotated = inst.rotated;
-        int w = rotated ? inst.Height : inst.Width;
-        int h = rotated ? inst.Width : inst.Height;
+        int w = inst.Width;
+        int h = inst.Height;
 
         for (int ix = 0; ix < w; ix++)
         {

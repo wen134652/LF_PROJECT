@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.Mathematics;
 
 public class InventoryGridView : MonoBehaviour
 {
@@ -213,7 +214,9 @@ public class InventoryGridView : MonoBehaviour
 
         float width = cellSize.x * w + spacing.x * (w - 1);
         float height = cellSize.y * h + spacing.y * (h - 1);
-        rt.sizeDelta = new Vector2(width, height);
+        Debug.Log($"{width},{height}");
+        rt.sizeDelta = inst.rotated ? new Vector2(height, width): new Vector2(width, height);
+        rt.rotation = inst.rotated ? Quaternion.Euler(0f, 0f, 90f):Quaternion.Euler(0f,0f,0f);
 
         // ===== 2. 用格子的世界坐标来算“多格区域的中心” =====
 
@@ -400,8 +403,8 @@ public class InventoryGridView : MonoBehaviour
 
         float width = cellSize.x * w + spacing.x * (w - 1);
         float height = cellSize.y * h + spacing.y * (h - 1);
-        draggingIcon.sizeDelta = new Vector2(width, height);
-
+        draggingIcon.sizeDelta = inst.rotated ? new Vector2(height, width) : new Vector2(width, height);
+        draggingIcon.rotation = inst.rotated ? Quaternion.Euler(0f, 0f, 90f) : Quaternion.Euler(0f, 0f, 0f);
         // 初始位置放在鼠标下
         Vector2 localPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
@@ -453,7 +456,8 @@ public class InventoryGridView : MonoBehaviour
 
         float width = cellSize.x * w + spacing.x * (w - 1);
         float height = cellSize.y * h + spacing.y * (h - 1);
-        draggingIcon.sizeDelta = new Vector2(width, height);
+        //draggingIcon.sizeDelta = new Vector2(width, height);
+        draggingIcon.rotation = draggingItem.rotated? Quaternion.Euler(0f, 0f, 90f): Quaternion.Euler(0f, 0f, 0f);
     }
 
     // 清除所有格子的高亮（恢复原色）
@@ -535,7 +539,7 @@ public class InventoryGridView : MonoBehaviour
         // 等一帧，让 GridLayoutGroup 自己排版
         yield return null;
         inventoryGrid.PlaceNewItem(testItem,1,0,0,false);
-        inventoryGrid.PlaceNewItem(testItem, 1, 0, 4, false);
+        //inventoryGrid.PlaceNewItem(testItem, 1, 0, 4, false);
         RefreshAllItems();
     }
 }
