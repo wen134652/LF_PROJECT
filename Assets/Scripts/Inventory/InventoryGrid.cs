@@ -12,12 +12,15 @@ public class InventoryGrid : MonoBehaviour
 
     private readonly List<InventoryItem> items = new List<InventoryItem>();
 
+    private InventoryGridView inventory;
     public IReadOnlyList<InventoryItem> Items => items;
     public int Width => width;
     public int Height => height;
 
+
     private void Awake()
     {
+        inventory = GetComponentInParent<InventoryGridView>();
         cells = new InventoryItem[width, height];
     }
     public InventoryItem GetItemAt(int x,int y)
@@ -66,6 +69,7 @@ public class InventoryGrid : MonoBehaviour
         InventoryItem inst = new InventoryItem(item, Mathf.Max(1, count), x, y, rotated);
         items.Add(inst);
         FillCells(inst, inst.originX, inst.originY, true);
+        inventory.RefreshAllItems();
         return inst;
     }
     private void FillCells(InventoryItem inst, int originX, int originY, bool occupy)
@@ -95,10 +99,7 @@ public class InventoryGrid : MonoBehaviour
             return false;
         }
         FillCells(inst, inst.originX, inst.originY, false);
-        Debug.Log(newX);
-        Debug.Log(newY);
         bool canPlace = CanPlace(inst.item, newX, newY, newRotated, null);
-        Debug.Log(canPlace);
         if (!canPlace)
         {
             FillCells(inst, inst.originX, inst.originY, true);

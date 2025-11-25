@@ -291,7 +291,6 @@ public class InventoryGridView : MonoBehaviour
             if (ok)
             {
                 Debug.Log($"放下物品：{draggingItem.item.displayName} 到 ({x},{y})");
-
                 StopDrag();         // 先结束拖拽
                 RefreshAllItems();  // 再重绘一遍物品位置
             }
@@ -334,7 +333,7 @@ public class InventoryGridView : MonoBehaviour
         selectedItem = null;
     }
 
-    private void StartDrag(InventoryItem inst)
+    public void StartDrag(InventoryItem inst)
     {
         ClearPreview();
         hoveredCell = null;

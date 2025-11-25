@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ManufactureCellUI : MonoBehaviour, IPointerClickHandler
+public class ManufactureCellUI : MonoBehaviour
 {
     public int x;
     public int y;
@@ -25,9 +25,5 @@ public class ManufactureCellUI : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        if (owner != null)
-            owner.OnCellClicked(this);
-    }
+
 }

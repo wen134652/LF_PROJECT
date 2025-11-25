@@ -101,6 +101,14 @@ public class ManufactureGrid : MonoBehaviour
         OnChanged?.Invoke();
     }
 
+    public void MovingItem(InventoryItem inst)
+    {
+        if (inst == null)
+        {
+            return;
+        }
+        FillCells(inst, inst.originX, inst.originY, false);
+    }
     // 从某个格子删掉整件物品
     public void RemoveItemAt(int x, int y)
     {

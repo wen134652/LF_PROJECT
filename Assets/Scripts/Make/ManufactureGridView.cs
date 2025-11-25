@@ -22,6 +22,10 @@ public class ManufactureGridView : MonoBehaviour
     private Dictionary<InventoryItem, RectTransform> itemIcons =
         new Dictionary<InventoryItem, RectTransform>();
 
+    private InventoryItem draggingItem;
+    private RectTransform draggingIcon;
+    private RectTransform originIconForDrag;
+
     private GridLayoutGroup layout;
     private Canvas rootCanvas;
 
@@ -53,6 +57,65 @@ public class ManufactureGridView : MonoBehaviour
             materialGrid.OnChanged -= RefreshAllItems;
     }
 
+    private void StartDrag(InventoryItem inst)
+    {
+
+        draggingItem = inst;
+
+        // 1) 原位置那个图标删掉
+        originIconForDrag = null;
+        if (itemIcons.TryGetValue(inst, out RectTransform originIconRT))
+        {
+            originIconForDrag = originIconRT;
+            originIconForDrag.gameObject.SetActive(false);
+        }
+
+        // 2) 清掉旧的拖拽图标
+        if (draggingIcon != null)
+        {
+            Destroy(draggingIcon.gameObject);
+            draggingIcon = null;
+        }
+
+        // 3) 创建跟随鼠标的图标
+        GameObject go = Instantiate(itemIconPrefab, itemsRoot);
+        draggingIcon = go.GetComponent<RectTransform>();
+
+        var img = go.GetComponent<Image>();
+        if (img != null)
+        {
+            img.sprite = inst.item.icon;
+            img.raycastTarget = false;  // 不挡点击
+        }
+
+        var text = go.GetComponentInChildren<TextMeshProUGUI>();
+        if (text != null)
+        {
+            text.text = inst.count > 1 ? inst.count.ToString() : "";
+            text.raycastTarget = false;
+        }
+
+        // 4) 设置拖拽图标尺寸（和占用格子一致）
+        Vector2 cellSize = layout.cellSize;
+        Vector2 spacing = layout.spacing;
+
+        int w = inst.Width;
+        int h = inst.Height;
+
+        float width = cellSize.x * w + spacing.x * (w - 1);
+        float height = cellSize.y * h + spacing.y * (h - 1);
+        draggingIcon.sizeDelta = new Vector2(width, height);
+
+        // 初始位置放在鼠标下
+        Vector2 localPos;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            itemsRoot,
+            Input.mousePosition,
+            rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : rootCanvas.worldCamera,
+            out localPos
+        );
+        draggingIcon.anchoredPosition = localPos;
+    }
     // ========= 生成 3×3 格子 =========
     private void BuildCells()
     {
@@ -172,16 +235,26 @@ public class ManufactureGridView : MonoBehaviour
                 materialGrid.RemoveItem(inst);
                 return;
             }
-
+            Debug.Log("2222");
             // PlaceNewItem 里已经触发 OnChanged，这里不需要再手动 Refresh
             return;
         }
-
-        // 情况 2：没有在拖东西 → 点击已有材料，删掉整件
+        // 情况 2：没有在拖东西,拖起来
         InventoryItem existing = materialGrid.GetItemAt(x, y);
         if (existing != null)
         {
+            materialGrid.MovingItem(existing);
+            inventoryView.StartDrag(existing);
+            originIconForDrag = null;
+            if (itemIcons.TryGetValue(existing, out RectTransform originIconRT))
+            {
+                originIconForDrag = originIconRT;
+                itemIcons.Remove(existing);
+                Destroy(originIconForDrag.gameObject);
+            }
             Debug.Log(existing.item.name);
+            return;
         }
+        Debug.Log("空格子");
     }
 }
