@@ -40,6 +40,7 @@ public class InventoryGridView : MonoBehaviour
     public Color previewBadColor = new Color(1f, 0f, 0f, 0.35f); // 红色半透明
 
     public ItemSO testItem;
+    public bool otherSystemDragging;
     public bool IsDraggingItem => draggingItem != null;
     public bool DraggingItemRotated => draggingItem != null && draggingItem.rotated;
 
@@ -62,7 +63,7 @@ public class InventoryGridView : MonoBehaviour
         // 数量用完：从背包里删除这个物品实例
         if (draggingItem.count <= 0)
         {
-            inventoryGrid.RemoveItem(draggingItem); // 如果你还没有这个函数，下面我会给一个实现
+            inventoryGrid.RemoveItem(draggingItem); 
             StopDrag();                             // 恢复原格子图标、销毁跟随图标
         }
         else
@@ -283,8 +284,8 @@ public class InventoryGridView : MonoBehaviour
             return;
         }
 
-        // 2.3 点到空格子 → 尝试把正在拖的物品移动到这里
-        if (inst == null)
+        // 2.3 点到空格子 → 尝试把正在拖的物品移动到这里,且当前物品来自背包
+        if (inst == null&&!otherSystemDragging)
         {
             bool ok = inventoryGrid.MoveItem(draggingItem, x, y, draggingItem.rotated);
 
@@ -293,12 +294,29 @@ public class InventoryGridView : MonoBehaviour
                 Debug.Log($"放下物品：{draggingItem.item.displayName} 到 ({x},{y})");
                 StopDrag();         // 先结束拖拽
                 RefreshAllItems();  // 再重绘一遍物品位置
+                Debug.Log("333333");
             }
             else
             {
                 Debug.Log("这个位置放不下该物品");
                 // 如果你想“放不下就自动取消拖拽”，可以在这里加 StopDrag();
             }
+        }
+        if (inst == null&&otherSystemDragging)
+        {
+            if (inventoryGrid.CanPlace(draggingItem.item,x,y,draggingItem.rotated))
+            {
+                Debug.Log($"转移物品物品：{draggingItem.item.displayName} 到 ({x},{y})");
+                inventoryGrid.PlaceNewItem(draggingItem.item, 1, x, y, draggingItem.rotated);
+                StopDrag();
+                RefreshAllItems();
+                otherSystemDragging = false;
+            }
+            else
+            {
+                Debug.Log("放不下");
+            }
+            
         }
     }
 
@@ -416,6 +434,7 @@ public class InventoryGridView : MonoBehaviour
             Destroy(draggingIcon.gameObject);
             draggingIcon = null;
         }
+        RefreshAllItems();
     }
 
     private void RotateDraggingItem()

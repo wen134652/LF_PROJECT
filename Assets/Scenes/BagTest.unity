@@ -492,7 +492,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 24, y: -20}
+  m_AnchoredPosition: {x: 76.868, y: -20}
   m_SizeDelta: {x: 243.81, y: 407.12}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1001915373
@@ -628,7 +628,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 23.75, y: -20}
+  m_AnchoredPosition: {x: 76.868, y: -20}
   m_SizeDelta: {x: 243.81, y: 407.12}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1047910148
@@ -645,6 +645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 6
   height: 10
+  items: []
 --- !u!1 &1092671857
 GameObject:
   m_ObjectHideFlags: 0
@@ -1236,6 +1237,7 @@ MonoBehaviour:
   previewOkColor: {r: 0, g: 1, b: 0, a: 0.35}
   previewBadColor: {r: 1, g: 0, b: 0, a: 0.35}
   testItem: {fileID: 11400000, guid: 5dbcc74cb8e12e14db2cd2d24a691325, type: 2}
+  otherSystemDragging: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

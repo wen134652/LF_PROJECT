@@ -155,7 +155,7 @@ public class ManufactureGridView : MonoBehaviour
         itemIcons.Clear();
 
         // 为材料区里的每件物品生成一张 icon
-        foreach (var inst in materialGrid.Items)
+        foreach (var inst in materialGrid.items)
         {
             CreateIconForItem(inst);
         }
@@ -245,16 +245,18 @@ public class ManufactureGridView : MonoBehaviour
         {
             materialGrid.MovingItem(existing);
             inventoryView.StartDrag(existing);
+            inventoryView.otherSystemDragging = true;
             originIconForDrag = null;
             if (itemIcons.TryGetValue(existing, out RectTransform originIconRT))
             {
                 originIconForDrag = originIconRT;
                 itemIcons.Remove(existing);
+                materialGrid.items.Remove(existing);
                 Destroy(originIconForDrag.gameObject);
             }
-            Debug.Log(existing.item.name);
             return;
         }
         Debug.Log("空格子");
+        //materialGrid.OnChanged();
     }
 }

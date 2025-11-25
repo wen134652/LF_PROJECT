@@ -9,15 +9,15 @@ public class InventoryGrid : MonoBehaviour
     public int height = 10;
 
     private InventoryItem[,] cells;
-
-    private readonly List<InventoryItem> items = new List<InventoryItem>();
-
+    [SerializeField]
+    private List<InventoryItem> items = new List<InventoryItem>();
+    
     private InventoryGridView inventory;
     public IReadOnlyList<InventoryItem> Items => items;
     public int Width => width;
     public int Height => height;
 
-
+    
     private void Awake()
     {
         inventory = GetComponentInParent<InventoryGridView>();
@@ -62,12 +62,16 @@ public class InventoryGrid : MonoBehaviour
     //背包中放入实例
     public InventoryItem PlaceNewItem(ItemSO item, int count, int x, int y, bool rotated)
     {
+        
         if (!CanPlace(item,x,y,rotated))
         {
+            Debug.Log("进入了cannot place");
             return null;
         }
         InventoryItem inst = new InventoryItem(item, Mathf.Max(1, count), x, y, rotated);
+        Debug.Log($"成功创建{inst.item.name}");
         items.Add(inst);
+        
         FillCells(inst, inst.originX, inst.originY, true);
         inventory.RefreshAllItems();
         return inst;

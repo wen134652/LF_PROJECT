@@ -8,9 +8,8 @@ public class ManufactureGrid : MonoBehaviour
     public int height = 3;
 
     private InventoryItem[,] cells;
-    private readonly List<InventoryItem> items = new List<InventoryItem>();
+    public List<InventoryItem> items = new List<InventoryItem>();
 
-    public IReadOnlyList<InventoryItem> Items => items;
     public int Width => width;
     public int Height => height;
 
