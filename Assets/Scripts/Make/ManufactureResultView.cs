@@ -112,23 +112,30 @@ public class ManufactureResultView : MonoBehaviour
 
     private void CreateIconForResult(ItemSO item, int count, int w, int h)
     {
-        if (itemIconPrefab == null || itemsRoot == null || layout == null || cellRTs == null)
+        if (item == null) return;
+        if (itemIconPrefab == null || itemsRoot == null || layout == null)
             return;
 
         GameObject iconGO = Instantiate(itemIconPrefab, itemsRoot);
         RectTransform rt = iconGO.GetComponent<RectTransform>();
+        if (rt == null) return;
 
-        // sprite
+        // === 1) 设置 sprite / 数量 ===
         var img = iconGO.GetComponent<Image>();
         if (img != null)
             img.sprite = item.icon;
 
-        // 数量文本（可选）
         var txt = iconGO.GetComponentInChildren<TextMeshProUGUI>();
         if (txt != null)
             txt.text = count > 1 ? count.ToString() : "";
 
-        // 尺寸：覆盖 w×h 个格子（和背包一样的公式）
+        // === 2) 关键：固定 icon 的锚点/轴心，确保“中心对中心” ===
+        // 我们用 itemsRoot 的左上角(0,1)作为坐标系原点，icon pivot 用中心
+        rt.anchorMin = new Vector2(0f, 1f);
+        rt.anchorMax = new Vector2(0f, 1f);
+        rt.pivot = new Vector2(0f, 1f);
+
+        // === 3) 尺寸：覆盖 w×h 个格子（考虑 spacing） ===
         Vector2 cellSize = layout.cellSize;
         Vector2 spacing = layout.spacing;
 
@@ -136,19 +143,26 @@ public class ManufactureResultView : MonoBehaviour
         float height = cellSize.y * h + spacing.y * (h - 1);
         rt.sizeDelta = new Vector2(width, height);
 
-        // 这里假定结果物品不旋转，如需要也可以在 ItemSO 里加标记再转 90°
+        // === 4) 位置：直接算覆盖区域的中心点（不使用 world/local 转换，最稳） ===
+        // Grid 从左上开始：X 向右正，Y 向下负
+        float stepX = cellSize.x + spacing.x;
+        float stepY = cellSize.y + spacing.y;
+
+        /*float centerX = (w - 1) * 0.5f * stepX;
+        float centerY = -(h - 1) * 0.5f * stepY;
+
+        rt.anchoredPosition = new Vector2(centerX, centerY);
+        */
+        float posX = 0f;
+        float posY = 0f;
+
+        rt.anchoredPosition = new Vector2(posX, posY);
+        // === 5) 旋转（结果一般不旋转，如需可按条件转） ===
         rt.localRotation = Quaternion.identity;
 
-        // 位置：取左上格 + 右下格的中心点
-        RectTransform cellLT = cellRTs[0, 0];
-        RectTransform cellRB = cellRTs[w - 1, h - 1];
-
-        Vector3 worldCenterLT = cellLT.TransformPoint(cellLT.rect.center);
-        Vector3 worldCenterRB = cellRB.TransformPoint(cellRB.rect.center);
-        Vector3 worldCenter = (worldCenterLT + worldCenterRB) * 0.5f;
-
-        Vector3 localCenter = itemsRoot.InverseTransformPoint(worldCenter);
-        rt.anchoredPosition = localCenter;
+        // （可选）确保 icon 不挡住下面格子的交互：如果你需要点格子，给 icon 的 Image 关 raycast
+        if (img != null)
+            img.raycastTarget = false;
     }
 
     // ================== 点击：尝试把产物放进背包 ==================
