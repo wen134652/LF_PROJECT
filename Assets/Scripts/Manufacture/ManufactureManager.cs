@@ -62,7 +62,7 @@ public class ManufactureManager : MonoBehaviour
 
     public void ClearContainer()
     {
-        currentContainer = null;
+        currentContainer = defaultContainer;
         RefreshPreviewRequested?.Invoke();
     }
 

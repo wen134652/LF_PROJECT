@@ -1,21 +1,21 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
 public class ManufactureResultView : MonoBehaviour
 {
-    [Header("Âß¼­")]
-    public ManufactureManager manager;      // ÀïÃæÓĞ GetPreviewResult() / CraftIfPossible()
+    [Header("é€»è¾‘")]
+    public ManufactureManager manager;      // é‡Œé¢æœ‰ GetPreviewResult() / CraftIfPossible()
 
-    [Header("UI ÒıÓÃ")]
-    public RectTransform cellsRoot;         // Ğ¡¸ñ×Ó¸¸½Úµã£¨ÓĞ GridLayoutGroup£©
-    public RectTransform itemsRoot;         // Í¼±ê¸¸½Úµã£¨ºÍ cellsRoot ÍêÈ«ÖØºÏ£©
-    public GameObject cellPrefab;           // ½á¹ûÇøµÄµ¥¸ö¸ñ×Ó prefab£¨±³¾°ÓÃ£©
-    public GameObject itemIconPrefab;       // ÎïÆ·Í¼±ê prefab£¨ÓÃ±³°üÀïµÄÄÇÒ»¸ö£©
+    [Header("UI å¼•ç”¨")]
+    public RectTransform cellsRoot;         // å°æ ¼å­çˆ¶èŠ‚ç‚¹ï¼ˆæœ‰ GridLayoutGroupï¼‰
+    public RectTransform itemsRoot;         // å›¾æ ‡çˆ¶èŠ‚ç‚¹ï¼ˆå’Œ cellsRoot å®Œå…¨é‡åˆï¼‰
+    public GameObject cellPrefab;           // ç»“æœåŒºçš„å•ä¸ªæ ¼å­ prefabï¼ˆèƒŒæ™¯ç”¨ï¼‰
+    public GameObject itemIconPrefab;       // ç‰©å“å›¾æ ‡ prefabï¼ˆç”¨èƒŒåŒ…é‡Œçš„é‚£ä¸€ä¸ªï¼‰
 
     private GridLayoutGroup layout;
-    private RectTransform[,] cellRTs;       // ¼ÇÂ¼Éú³ÉµÄ¸ñ×Ó£¬¸øÍ¼±ê¶¨Î»ÓÃ
+    private RectTransform[,] cellRTs;       // è®°å½•ç”Ÿæˆçš„æ ¼å­ï¼Œç»™å›¾æ ‡å®šä½ç”¨
     public Button putIntoBagButton;
     public Button throwOutButton;
     private void Awake()
@@ -28,7 +28,11 @@ public class ManufactureResultView : MonoBehaviour
 
     private void OnEnable()
     {
-        BuildEmptyGrid(1, 1);   // ÏÈÉú³ÉÒ»¸ö 1¡Á1£¬±ÜÃâ¿ÕÒıÓÃ
+        BuildEmptyGrid(1, 1);   // å…ˆç”Ÿæˆä¸€ä¸ª 1Ã—1ï¼Œé¿å…ç©ºå¼•ç”¨
+                                // å…³é”®ï¼šåŠ¨æ€ç”Ÿæˆæ ¼å­åï¼Œå¼ºåˆ¶è®© GridLayoutGroup ç«‹åˆ»å¸ƒå±€å®Œæˆ
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(cellsRoot);
+        Canvas.ForceUpdateCanvases();
 
         RefreshPreview();
 
@@ -46,21 +50,21 @@ public class ManufactureResultView : MonoBehaviour
         }
     }
 
-    // ================== Ë¢ĞÂÔ¤ÀÀ ==================
+    // ================== åˆ·æ–°é¢„è§ˆ ==================
 
     public void RefreshPreview()
     {
         if (manager == null || layout == null || cellsRoot == null || itemsRoot == null)
             return;
 
-        // Çåµô¾ÉÍ¼±ê
+        // æ¸…æ‰æ—§å›¾æ ‡
         foreach (Transform child in itemsRoot)
             Destroy(child.gameObject);
 
         var preview = manager.GetPreviewResult();
         if (preview.item == null || preview.count <= 0)
         {
-            // Ã»ÓĞ²úÎï¾Í²»»­
+            // æ²¡æœ‰äº§ç‰©å°±ä¸ç”»
             BuildEmptyGrid(1, 1);
             return;
         }
@@ -71,27 +75,27 @@ public class ManufactureResultView : MonoBehaviour
         int w = Mathf.Max(1, item.gridWidth);
         int h = Mathf.Max(1, item.gridHeight);
         Debug.Log($"{w},{h}");
-        // ÖØĞÂÉú³É w¡Áh ¸öĞ¡¸ñ×Ó
+        // é‡æ–°ç”Ÿæˆ wÃ—h ä¸ªå°æ ¼å­
         BuildEmptyGrid(w, h);
-
-        // Éú³ÉÒ»ÕÅ´óÍ¼±ê
+        
+        // ç”Ÿæˆä¸€å¼ å¤§å›¾æ ‡
         CreateIconForResult(item, count, w, h);
     }
 
-    // ================== Éú³É¸ñ×Ó ==================
+    // ================== ç”Ÿæˆæ ¼å­ ==================
 
     private void BuildEmptyGrid(int w, int h)
     {
         if (cellsRoot == null || cellPrefab == null || layout == null)
             return;
 
-        // Çåµô¾É¸ñ×Ó
+        // æ¸…æ‰æ—§æ ¼å­
         foreach (Transform child in cellsRoot)
             Destroy(child.gameObject);
 
         cellRTs = new RectTransform[w, h];
 
-        // ÈÃ GridLayout °´ÁĞÊıÀ´ÅÅ²¼
+        // è®© GridLayout æŒ‰åˆ—æ•°æ¥æ’å¸ƒ
         layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         layout.constraintCount = w;
 
@@ -108,34 +112,25 @@ public class ManufactureResultView : MonoBehaviour
         }
     }
 
-    // ================== Éú³ÉÍ¼±ê ==================
+    // ================== ç”Ÿæˆå›¾æ ‡ ==================
 
     private void CreateIconForResult(ItemSO item, int count, int w, int h)
     {
         if (item == null) return;
-        if (itemIconPrefab == null || itemsRoot == null || layout == null)
-            return;
+        if (itemIconPrefab == null || itemsRoot == null || layout == null) return;
 
         GameObject iconGO = Instantiate(itemIconPrefab, itemsRoot);
         RectTransform rt = iconGO.GetComponent<RectTransform>();
         if (rt == null) return;
 
-        // === 1) ÉèÖÃ sprite / ÊıÁ¿ ===
-        var img = iconGO.GetComponent<Image>();
+        // sprite
+        var img = iconGO.GetComponent<UnityEngine.UI.Image>();
         if (img != null)
+        {
             img.sprite = item.icon;
+            img.raycastTarget = false;
+        }
 
-        var txt = iconGO.GetComponentInChildren<TextMeshProUGUI>();
-        if (txt != null)
-            txt.text = count > 1 ? count.ToString() : "";
-
-        // === 2) ¹Ø¼ü£º¹Ì¶¨ icon µÄÃªµã/ÖáĞÄ£¬È·±£¡°ÖĞĞÄ¶ÔÖĞĞÄ¡± ===
-        // ÎÒÃÇÓÃ itemsRoot µÄ×óÉÏ½Ç(0,1)×÷Îª×ø±êÏµÔ­µã£¬icon pivot ÓÃÖĞĞÄ
-        rt.anchorMin = new Vector2(0f, 1f);
-        rt.anchorMax = new Vector2(0f, 1f);
-        rt.pivot = new Vector2(0f, 1f);
-
-        // === 3) ³ß´ç£º¸²¸Ç w¡Áh ¸ö¸ñ×Ó£¨¿¼ÂÇ spacing£© ===
         Vector2 cellSize = layout.cellSize;
         Vector2 spacing = layout.spacing;
 
@@ -143,39 +138,29 @@ public class ManufactureResultView : MonoBehaviour
         float height = cellSize.y * h + spacing.y * (h - 1);
         rt.sizeDelta = new Vector2(width, height);
 
-        // === 4) Î»ÖÃ£ºÖ±½ÓËã¸²¸ÇÇøÓòµÄÖĞĞÄµã£¨²»Ê¹ÓÃ world/local ×ª»»£¬×îÎÈ£© ===
-        // Grid ´Ó×óÉÏ¿ªÊ¼£ºX ÏòÓÒÕı£¬Y ÏòÏÂ¸º
-        float stepX = cellSize.x + spacing.x;
-        float stepY = cellSize.y + spacing.y;
+        rt.anchorMin = new Vector2(0.5f, 0.5f);
+        rt.anchorMax = new Vector2(0.5f, 0.5f);
+        rt.pivot = new Vector2(0.5f, 0.5f);
 
-        /*float centerX = (w - 1) * 0.5f * stepX;
-        float centerY = -(h - 1) * 0.5f * stepY;
-
-        rt.anchoredPosition = new Vector2(centerX, centerY);
-        */
-        float posX = 0f;
-        float posY = 0f;
-
-        rt.anchoredPosition = new Vector2(posX, posY);
-        // === 5) Ğı×ª£¨½á¹ûÒ»°ã²»Ğı×ª£¬ÈçĞè¿É°´Ìõ¼ş×ª£© ===
+        rt.anchoredPosition = Vector2.zero;
         rt.localRotation = Quaternion.identity;
-
-        // £¨¿ÉÑ¡£©È·±£ icon ²»µ²×¡ÏÂÃæ¸ñ×ÓµÄ½»»¥£ºÈç¹ûÄãĞèÒªµã¸ñ×Ó£¬¸ø icon µÄ Image ¹Ø raycast
-        if (img != null)
-            img.raycastTarget = false;
+        rt.localScale = Vector3.one;
     }
 
-    // ================== µã»÷£º³¢ÊÔ°Ñ²úÎï·Å½ø±³°ü ==================
+
+
+
+    // ================== ç‚¹å‡»ï¼šå°è¯•æŠŠäº§ç‰©æ”¾è¿›èƒŒåŒ… ==================
 
     public void PutIntoBag()
     {
         if (manager == null)
             return;
         /*
-        // ÑØÓÃÄãÖ®Ç°µÄÂß¼­£º³É¹¦ÔòÏûºÄ²ÄÁÏ²¢·ÅÈë±³°ü£¬Ô¤ÀÀ»áÍ¨¹ıÊÂ¼şÖØĞÂË¢ĞÂ
+        // æ²¿ç”¨ä½ ä¹‹å‰çš„é€»è¾‘ï¼šæˆåŠŸåˆ™æ¶ˆè€—ææ–™å¹¶æ”¾å…¥èƒŒåŒ…ï¼Œé¢„è§ˆä¼šé€šè¿‡äº‹ä»¶é‡æ–°åˆ·æ–°
         if (manager.CraftIfPossible())
         {
-            Debug.Log("´´Ôì");
+            Debug.Log("åˆ›é€ ");
             RefreshPreview();
         }*/
         if (manager.TryGiveOutputToInventory(manager.result,1))
@@ -184,7 +169,7 @@ public class ManufactureResultView : MonoBehaviour
         }
         else
         {
-            Debug.Log("·Å²»½øÅ¶£¡");
+            Debug.Log("æ”¾ä¸è¿›å“¦ï¼");
         }
     }
 

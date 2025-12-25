@@ -13,9 +13,11 @@ public class ContainerSlot: MonoBehaviour, IPointerClickHandler
     [Header("UI")]
     public RectTransform iconRoot;            // 图标的父节点（可以就是自己）
     public GameObject itemIconPrefab;         // 和背包用的一样的 icon prefab
+    public Image icon;
 
     private ItemSO equippedItem;              // 当前装备的容器
     private RectTransform iconRT;             // 显示容器图标的 RT
+
 
 
     public bool HasTool => equippedItem != null;
@@ -23,13 +25,19 @@ public class ContainerSlot: MonoBehaviour, IPointerClickHandler
 
     private void OnEnable()
     {
+        icon.gameObject.SetActive(false);
         manager = gameObject.GetComponentInParent<ManufactureManager>();
-        manager.ClearTool();
+        manager.ClearContainer();
+        ClearSlot();
+        Equip(manager.defaultContainer);
     }
     private void OnDisable()
     {
-        manager.ClearTool();
-        manager = null;
+        if (equippedItem!=manager.defaultContainer)
+        {
+            InventoryItem backOk = playerInventory.PlaceNewItemWithNoPosition(equippedItem);
+        }
+        
     }
     bool CanAccept(ItemSO so)
     {
@@ -81,6 +89,7 @@ public class ContainerSlot: MonoBehaviour, IPointerClickHandler
 
     private void Equip(ItemSO so)
     {
+        icon.gameObject.SetActive(true);
         Debug.Log("放入容器！");
         inventoryView.ConsumeOneFromDraggingForExternal();
         equippedItem = so;
@@ -100,7 +109,7 @@ public class ContainerSlot: MonoBehaviour, IPointerClickHandler
         var img = go.GetComponent<Image>();
         if (img != null)
             img.sprite = so.icon;
-
+        icon.sprite = so.icon;
         // 让图标充满整个容器格
         iconRT.anchorMin = Vector2.zero;
         iconRT.anchorMax = Vector2.one;
@@ -115,8 +124,10 @@ public class ContainerSlot: MonoBehaviour, IPointerClickHandler
         if (iconRT != null)
         {
             Equip(manager.defaultContainer);
-            Destroy(iconRT.gameObject);
-            iconRT = null;
+            //Destroy(iconRT.gameObject);
+            //iconRT = null;
+            //icon.sprite = null;
+            //icon.gameObject.SetActive(false);
         }
     }
 }

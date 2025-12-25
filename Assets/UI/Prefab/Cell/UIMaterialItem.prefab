@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 868251126327206180}
   - component: {fileID: 8111574416773039519}
-  - component: {fileID: 215703905804319188}
+  - component: {fileID: 6811329401723156519}
   m_Layer: 0
-  m_Name: UIBagItem
+  m_Name: UIMaterialItem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,7 +83,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &215703905804319188
+--- !u!114 &6811329401723156519
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -92,7 +92,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5973458257289716767}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0830506e599c44e4e86191746857909a, type: 3}
+  m_Script: {fileID: 11500000, guid: b74cf900fa564ab43bdc0f2f9c4f4ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   x: 0
