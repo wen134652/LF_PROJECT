@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class ItemCanPick : MonoBehaviour, IInteractable, IShortLongInteractable
+public class ItemCanPick : MonoBehaviour, IPickupInteractable, IShortLongInteractable
 {
     [SerializeField] private string prompt = "按 E 拿起（长按入包）";
     InteractableTrigger trigger;
@@ -43,11 +43,9 @@ public class ItemCanPick : MonoBehaviour, IInteractable, IShortLongInteractable
         var p = player != null ? player : _player;
         if (p == null) return;
 
-        // 1) 找到手部挂点（你项目里就是 LeftHand）
         var leftHand = p.Find("LeftHand");
         if (leftHand == null)
         {
-            // 兜底：没有 LeftHand 就挂到玩家根下，并隐藏碰撞
             leftHand = p;
         }
 

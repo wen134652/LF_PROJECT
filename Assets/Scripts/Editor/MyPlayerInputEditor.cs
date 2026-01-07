@@ -375,8 +375,8 @@ public class MyPlayerInputEditor : Editor
             DrawKeyBinding("右手投掷", serializedObject.FindProperty("throwRightBinding"));
             DrawKeyBinding("打开背包", serializedObject.FindProperty("openInventoryBinding"));
             DrawKeyBinding("交互", serializedObject.FindProperty("interactBinding"));
-            DrawKeyBinding("记事短按", serializedObject.FindProperty("quickNoteTapBinding"));
-            DrawKeyBinding("记事长按", serializedObject.FindProperty("noteHoldBinding"));
+            DrawKeyBinding("记事短按", serializedObject.FindProperty("quickPickTapBinding"));
+            DrawKeyBinding("记事长按", serializedObject.FindProperty("pickHoldBinding"));
 
             // 绘制瞄准摇杆绑定
             DrawStringBinding("瞄准摇杆", serializedObject.FindProperty("aimStickBinding"));

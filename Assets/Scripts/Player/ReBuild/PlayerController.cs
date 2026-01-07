@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     private ThrowController throwController;
     private InputHandler inputHandler;
     private GroundChecker groundChecker;
+    private PlayerInteraction playerInteraction;
 
     private bool inventoryOpen = false;
 
@@ -31,8 +32,9 @@ public class PlayerController : MonoBehaviour
         climbController = GetComponent<ClimbController>();
         throwController = GetComponent<ThrowController>();
         groundChecker = GetComponent<GroundChecker>();
-        
+        playerInteraction = GetComponent<PlayerInteraction>();
         inputHandler = GetComponent<InputHandler>();
+
         if (inputHandler == null)
         {
             inputHandler = gameObject.AddComponent<InputHandler>();
@@ -237,9 +239,15 @@ public class PlayerController : MonoBehaviour
         SetControlLocked(false);
     }
 
-    public void OnSpecial(InputAction.CallbackContext ctx) { }
+    public void OnInteract(InputAction.CallbackContext ctx) 
+    {
+        playerInteraction.Interact(ctx);
+    }
 
-    public void OnQuickNoteTap(InputAction.CallbackContext ctx) { }
+    public void OnPickUp(InputAction.CallbackContext ctx) 
+    {
+        playerInteraction.Pickup(ctx);
+    }
 
     public void OnNoteHold(InputAction.CallbackContext ctx) { }
 

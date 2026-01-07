@@ -56,19 +56,16 @@ public class MyPlayerInput : MonoBehaviour
     [Tooltip("跳跃按键绑定")]
     public KeyBinding jumpBinding = new KeyBinding { keyboardBinding = "<Keyboard>/space", gamepadBinding = "<Gamepad>/buttonSouth" };
 
+    [Tooltip("冲刺按键绑定")]
+    public KeyBinding dashBingding = new KeyBinding { keyboardBinding = "<Keyboard/leftShift>", gamepadBinding = "<Gamepad>/bottonWest" };
+
     [Header("手部动作配置")]
     [Tooltip("左手使用按键绑定")]
     public KeyBinding leftHandBinding = new KeyBinding { keyboardBinding = "<Keyboard>/q", gamepadBinding = "<Gamepad>/leftShoulder" };
     
-    [Tooltip("右手使用按键绑定")]
-    public KeyBinding rightHandBinding = new KeyBinding { keyboardBinding = "<Keyboard>/e", gamepadBinding = "<Gamepad>/rightShoulder" };
-
     [Header("投掷和瞄准配置")]
     [Tooltip("左手投掷按键绑定")]
     public KeyBinding throwLeftBinding = new KeyBinding { keyboardBinding = "<Keyboard>/o", gamepadBinding = "<Gamepad>/leftTrigger" };
-    
-    [Tooltip("右手投掷按键绑定")]
-    public KeyBinding throwRightBinding = new KeyBinding { keyboardBinding = "<Keyboard>/p", gamepadBinding = "<Gamepad>/rightTrigger" };
     
     [Tooltip("瞄准摇杆（手柄右摇杆）")]
     public string aimStickBinding = "<Gamepad>/rightStick";
@@ -82,17 +79,10 @@ public class MyPlayerInput : MonoBehaviour
     public KeyBinding openInventoryBinding = new KeyBinding { keyboardBinding = "<Keyboard>/tab", gamepadBinding = "<Gamepad>/buttonNorth" };
     
     [Tooltip("交互按键绑定")]
-    public KeyBinding interactBinding = new KeyBinding { keyboardBinding = "<Keyboard>/f", gamepadBinding = "<Gamepad>/buttonEast" };
+    public KeyBinding interactBinding = new KeyBinding { keyboardBinding = "<Keyboard>/f", gamepadBinding = "<Gamepad>/dpad/up" };
 
-    [Header("记事功能配置")]
-    [Tooltip("记事短按按键绑定")]
-    public KeyBinding quickNoteTapBinding = new KeyBinding { keyboardBinding = "<Keyboard>/n", gamepadBinding = "<Gamepad>/buttonWest" };
-    
-    [Tooltip("记事长按按键绑定")]
-    public KeyBinding noteHoldBinding = new KeyBinding { keyboardBinding = "<Keyboard>/n", gamepadBinding = "<Gamepad>/buttonWest" };
-    
-    [Tooltip("记事长按持续时间（秒）")]
-    public float noteHoldDuration = 0.5f;
+    [Tooltip("拾取按键绑定")]
+    public KeyBinding pickUpBinding = new KeyBinding { keyboardBinding = "<Keyboard>/e", gamepadBinding = "<Gamepad>/buttonEast" };
 
     [Header("其他设置")]
     [Tooltip("手部动作锁定持续时间（秒）")]
@@ -104,19 +94,17 @@ public class MyPlayerInput : MonoBehaviour
     // 基础行动
     private InputAction move;
     private InputAction jump;
+    private InputAction dash;
 
-    // 使用/投掷/瞄准
+    // 使用/投掷/瞄准     
     private InputAction leftHand;
-    private InputAction rightHand;
     private InputAction throwLeft;
-    private InputAction throwRight;
     private InputAction aimStick;
 
     // 系统与交互
     private InputAction openInventory;
     private InputAction interAction;
-    private InputAction quickNoteTap;
-    private InputAction noteHold;
+    private InputAction pickUp;
 
     // 订阅解绑集中管理
     private readonly List<System.Action> unbindActions = new List<System.Action>();
@@ -149,7 +137,7 @@ public class MyPlayerInput : MonoBehaviour
         SetupThrowAndAim();
         SetupInventory();
         SetupInteraction();
-        SetupNotes();
+        SetupPickUp();
     }
 
     private void OnEnable() 
@@ -247,19 +235,14 @@ public class MyPlayerInput : MonoBehaviour
     private void SetupUseHands()
     {
         leftHand = map.AddAction("UseLeftHand", type: InputActionType.Button);
-        rightHand = map.AddAction("UseRightHand", type: InputActionType.Button);
 
         AddBindingToAction(leftHand, leftHandBinding);
-        AddBindingToAction(rightHand, rightHandBinding);
 
         System.Action<InputAction.CallbackContext> leftHandler = OnLeftHandPerformed;
-        System.Action<InputAction.CallbackContext> rightHandler = OnRightHandPerformed;
 
         leftHand.performed += leftHandler;
-        rightHand.performed += rightHandler;
 
         unbindActions.Add(() => leftHand.performed -= leftHandler);
-        unbindActions.Add(() => rightHand.performed -= rightHandler);
     }
 
     /// <summary>
@@ -287,21 +270,13 @@ public class MyPlayerInput : MonoBehaviour
         throwLeft = map.AddAction("ThrowLeft", InputActionType.Button);
         AddBindingToAction(throwLeft, throwLeftBinding);
 
-        throwRight = map.AddAction("ThrowRight", InputActionType.Button);
-        AddBindingToAction(throwRight, throwRightBinding);
-
         System.Action<InputAction.CallbackContext> leftStarted = OnThrowLeftStarted;
         System.Action<InputAction.CallbackContext> leftCanceled = OnThrowLeftCanceled;
-        System.Action<InputAction.CallbackContext> rightStarted = OnThrowRightStarted;
-        System.Action<InputAction.CallbackContext> rightCanceled = OnThrowRightCanceled;
 
         throwLeft.started += leftStarted;
         throwLeft.canceled += leftCanceled;
-        throwRight.started += rightStarted;
-        throwRight.canceled += rightCanceled;
 
         unbindActions.Add(() => { throwLeft.started -= leftStarted; throwLeft.canceled -= leftCanceled; });
-        unbindActions.Add(() => { throwRight.started -= rightStarted; throwRight.canceled -= rightCanceled; });
     }
 
     /// <summary>
@@ -326,8 +301,11 @@ public class MyPlayerInput : MonoBehaviour
         interAction = map.AddAction("TradeOrSpecial", InputActionType.Button);
         AddBindingToAction(interAction, interactBinding);
 
-        System.Action<InputAction.CallbackContext> onInteract = controller.OnSpecial;
+        System.Action<InputAction.CallbackContext> onInteract = controller.OnInteract;
+        interAction.started += onInteract;
         interAction.performed += onInteract;
+        interAction.canceled += onInteract;
+
 
         unbindActions.Add(() => interAction.performed -= onInteract);
     }
@@ -335,36 +313,18 @@ public class MyPlayerInput : MonoBehaviour
     /// <summary>
     /// 设置记事输入
     /// </summary>
-    private void SetupNotes()
+    private void SetupPickUp()
     {
         // 短按
-        quickNoteTap = map.AddAction("QuickNoteTap", InputActionType.Button);
-        AddBindingToAction(quickNoteTap, quickNoteTapBinding);
+        pickUp = map.AddAction("pickUp", InputActionType.Button);
+        AddBindingToAction(pickUp, pickUpBinding);
 
-        System.Action<InputAction.CallbackContext> noteTap = controller.OnQuickNoteTap;
-        quickNoteTap.performed += noteTap;
-        unbindActions.Add(() => quickNoteTap.performed -= noteTap);
+        System.Action<InputAction.CallbackContext> pickAction = controller.OnPickUp;
+        pickUp.started += pickAction;
+        pickUp.performed += pickAction;
+        pickUp.canceled += pickAction;
 
-        // 长按
-        noteHold = map.AddAction("NoteHold", InputActionType.Button);
-        
-        // 添加键盘长按绑定
-        if (!string.IsNullOrEmpty(noteHoldBinding.keyboardBinding))
-        {
-            var holdKey = noteHold.AddBinding(noteHoldBinding.keyboardBinding);
-            holdKey.WithInteractions($"hold(duration={noteHoldDuration})");
-        }
-        
-        // 添加手柄长按绑定
-        if (!string.IsNullOrEmpty(noteHoldBinding.gamepadBinding))
-        {
-            var holdPad = noteHold.AddBinding(noteHoldBinding.gamepadBinding);
-            holdPad.WithInteractions($"hold(duration={noteHoldDuration})");
-        }
-
-        System.Action<InputAction.CallbackContext> noteHoldHandler = controller.OnNoteHold;
-        noteHold.performed += noteHoldHandler;
-        unbindActions.Add(() => noteHold.performed -= noteHoldHandler);
+        unbindActions.Add(() => pickUp.performed -= pickAction);
     }
 
     /// <summary>
@@ -399,13 +359,6 @@ public class MyPlayerInput : MonoBehaviour
         StartCoroutine(HandAutoUnlock(handLockDuration));
     }
 
-    private void OnRightHandPerformed(InputAction.CallbackContext ctx)
-    {
-        if (handBusy) return;
-        handBusy = true;
-        controller.OnUseRightHand(ctx);
-        StartCoroutine(HandAutoUnlock(handLockDuration));
-    }
 
     private void OnAimChanged(InputAction.CallbackContext ctx)
     {
@@ -426,19 +379,6 @@ public class MyPlayerInput : MonoBehaviour
     private void OnThrowLeftCanceled(InputAction.CallbackContext ctx)
     {
         controller.ReleaseAim(ctx); // 左手释放投掷
-        handBusy = false;
-    }
-
-    private void OnThrowRightStarted(InputAction.CallbackContext ctx)
-    {
-        if (handBusy) return;
-        handBusy = true;
-        controller.BeginAim(false); // 右手开始瞄准
-    }
-
-    private void OnThrowRightCanceled(InputAction.CallbackContext ctx)
-    {
-        controller.ReleaseAim(ctx); // 右手释放投掷
         handBusy = false;
     }
 

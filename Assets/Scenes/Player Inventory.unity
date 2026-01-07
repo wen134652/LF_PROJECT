@@ -1248,18 +1248,15 @@ MonoBehaviour:
   jumpBinding:
     keyboardBinding: <Keyboard>/space
     gamepadBinding: <Gamepad>/buttonSouth
+  dashBingding:
+    keyboardBinding: <Keyboard/leftShift>
+    gamepadBinding: <Gamepad>/bottonWest
   leftHandBinding:
     keyboardBinding: <Keyboard>/q
     gamepadBinding: <Gamepad>/leftShoulder
-  rightHandBinding:
-    keyboardBinding: <Keyboard>/e
-    gamepadBinding: <Gamepad>/rightShoulder
   throwLeftBinding:
     keyboardBinding: <Keyboard>/o
     gamepadBinding: <Gamepad>/leftTrigger
-  throwRightBinding:
-    keyboardBinding: <Keyboard>/p
-    gamepadBinding: <Gamepad>/rightTrigger
   aimStickBinding: <Gamepad>/rightStick
   aimDeadzoneMin: 0.25
   openInventoryBinding:
@@ -1268,13 +1265,9 @@ MonoBehaviour:
   interactBinding:
     keyboardBinding: <Keyboard>/f
     gamepadBinding: <Gamepad>/rightTrigger
-  quickNoteTapBinding:
-    keyboardBinding: <Keyboard>/n
-    gamepadBinding: <Gamepad>/buttonWest
-  noteHoldBinding:
-    keyboardBinding: <Keyboard>/m
-    gamepadBinding: <Gamepad>/buttonWest
-  noteHoldDuration: 0.5
+  pickUpBinding:
+    keyboardBinding: <Keyboard>/e
+    gamepadBinding: <Gamepad>/buttonEast
   handLockDuration: 0.15
 --- !u!114 &896699253
 MonoBehaviour:
@@ -1288,7 +1281,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74408fabdfaef604b988a82430d67726, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactKey: 101
   maxInteractDistance: 3
   OnPromptChanged:
     m_PersistentCalls:
@@ -3946,9 +3938,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4570338357619962441, guid: baa5dfb81a1086345a911e87c837bf0a, type: 3}
+      propertyPath: m_SortingOrder
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5597122816792170410, guid: baa5dfb81a1086345a911e87c837bf0a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 4.35
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 5597122816792170410, guid: baa5dfb81a1086345a911e87c837bf0a, type: 3}
       propertyPath: m_LocalPosition.y
